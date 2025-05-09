@@ -2,51 +2,56 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import express from "express";
-import sirv from "sirv";
-import compression from "compression";
+import { createServer as createViteServer } from "vite";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const isProduction = process.env.NODE_ENV === "production";
 const resolve = (p) => path.resolve(__dirname, "..", p);
 
-// Yang perlu diimport dari build SSR
-const mainServer = async (req, res) => {
-  const app = express();
+// Create express app
+const app = express();
 
-  // Middleware
-  app.use(compression());
-  app.use(
-    sirv(resolve("dist/client"), {
-      extensions: [],
-      gzip: true,
-    })
-  );
+// Determine if we're in production
+const isProduction = process.env.NODE_ENV === "production";
 
-  // Serve assets
-  app.use("/assets", express.static(resolve("dist/client/assets")));
+export default async (req, res) => {
+  try {
+    const url = req.url;
 
-  // Server-side rendering
-  const template = fs.readFileSync(resolve("dist/client/index.html"), "utf-8");
-  const { render } = await import("../dist/server/entry-server.js");
+    let template, render;
 
-  app.use("*", async (req, res) => {
-    try {
-      const url = req.originalUrl;
-      const { html: appHtml, head } = await render(url);
+    if (isProduction) {
+      // In production, use the built files
+      template = fs.readFileSync(resolve("dist/client/index.html"), "utf-8");
+      render = (await import(resolve("dist/server/entry-server.js"))).render;
+    } else {
+      // In development, create a Vite dev server
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: "custom",
+        root: resolve("./"),
+      });
 
-      const html = template
-        .replace("<!--head-outlet-->", head || "")
-        .replace("<!--app-outlet-->", appHtml);
+      // Use vite's connect instance as middleware
+      app.use(vite.middlewares);
 
-      res.status(200).set({ "Content-Type": "text/html" }).end(html);
-    } catch (e) {
-      console.error(e);
-      res.status(500).end(e.stack);
+      template = fs.readFileSync(resolve("index.html"), "utf-8");
+      template = await vite.transformIndexHtml(url, template);
+      render = (await vite.ssrLoadModule("/src/entry-server.tsx")).render;
     }
-  });
 
-  // Delegasi ke express untuk handling
-  return app(req, res);
+    // Render the app
+    const rendered = await render(url);
+
+    const html = template
+      .replace(`<!--app-head-->`, rendered.head ?? "")
+      .replace(`<!--app-html-->`, rendered.html ?? "");
+
+    // Send the rendered HTML
+    res.status(200);
+    res.setHeader("Content-Type", "text/html");
+    res.end(html);
+  } catch (e) {
+    console.error(e);
+    res.status(500).end(e.stack);
+  }
 };
-
-export default mainServer;

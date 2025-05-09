@@ -7,7 +7,8 @@
     "dev": "node server",
     "build": "npm run build:client && npm run build:server",
     "build:client": "vite build --outDir dist/client",
-    "build:server": "vite build --ssr src/entry-server.tsx --outDir dist/server"
+    "build:server": "vite build --ssr src/entry-server.tsx --outDir dist/server",
+    "vercel-build": "npm run build"
   },
   "dependencies": {
     "compression": "^1.8.0",
@@ -22,10 +23,12 @@
     "@types/node": "^22.13.4",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
+    "@vercel/node": "^5.1.15",
     "@vitejs/plugin-react-swc": "^3.8.0",
     "cross-env": "^7.0.3",
     "terser": "^5.39.0",
     "typescript": "~5.7.3",
+    "vercel": "^41.7.3",
     "vite": "^6.1.1",
     "vite-plugin-vercel": "^9.0.5"
   }
