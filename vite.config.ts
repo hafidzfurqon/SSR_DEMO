@@ -1,29 +1,29 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
-import vercel from "vite-plugin-vercel";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import vercel  from 'vite-plugin-vercel';
 
 export default defineConfig({
   plugins: [
     react(),
     vercel({
       prerender: {
-        enabled: false,
-      },
-    }),
+        enabled: false
+      }
+    })
   ],
   resolve: {
     alias: {
-      "@": "/src",
-    },
+      '@': '/src'
+    }
   },
   build: {
     // Memastikan Vite tidak melakukan mangling nama properti di production
-    minify: "terser",
+    minify: 'terser',
     terserOptions: {
-      mangle: false,
-    },
+      mangle: false
+    }
   },
   ssr: {
-    noExternal: ["react-helmet-async"],
-  },
+    noExternal: ['react-helmet-async']
+  }
 });
