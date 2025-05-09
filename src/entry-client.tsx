@@ -12,3 +12,5 @@ hydrateRoot(
     </HelmetProvider>
   </StrictMode>
 );
+
+// entry client disini
