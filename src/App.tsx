@@ -1,4 +1,5 @@
-import { Helmet } from "react-helmet-async";
+import helmetAsync from "react-helmet-async";
+const { Helmet } = helmetAsync;
 import "./App.css";
 import { useState } from "react";
 
@@ -27,7 +28,7 @@ function App() {
         <meta property="og:image" content={post.image} />
         <meta property="og:type" content="article" />
         <meta property="og:site_name" content="My Awesome Site" />
-        <meta property="og:url" content={window.location.href} />
+        <meta property="og:url" content={``} />
 
         {/* Twitter Card Tags */}
         <meta name="twitter:card" content="summary_large_image" />
