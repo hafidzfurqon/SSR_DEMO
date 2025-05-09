@@ -1,7 +1,8 @@
-import helmetAsync from "react-helmet-async";
-const { Helmet } = helmetAsync;
+import { Helmet } from "react-helmet-async";
+// const= helmetAsync;
 import "./App.css";
 import { useState } from "react";
+// Helmet
 
 function App() {
   const [post] = useState({

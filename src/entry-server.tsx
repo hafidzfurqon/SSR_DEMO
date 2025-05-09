@@ -1,10 +1,11 @@
 import { StrictMode } from "react";
 import { renderToString } from "react-dom/server";
 import App from "./App";
+import { HelmetProvider } from "react-helmet-async";
 // import {  } from "react-helmet-async";
-import helmetAsync from "react-helmet-async";
-const { HelmetProvider } = helmetAsync;
-
+// import helmetAsync from "react-helmet-async";
+// const { HelmetProvider } = helmetAsync;
+// HelmetProvider
 export function render(_url: string) {
   const helmetContext = {} as any;
 
